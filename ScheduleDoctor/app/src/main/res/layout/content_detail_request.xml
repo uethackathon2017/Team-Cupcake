@@ -16,10 +16,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:background="@android:color/white"
-            android:paddingTop="24dp"
             android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:paddingLeft="8dp">
+            android:paddingTop="24dp">
 
             <cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.View.RoundedImageView
                 android:id="@+id/imgAvatar"
@@ -166,15 +166,16 @@
 
             <TextView
                 android:id="@+id/tvSymptom"
+                style="@style/TextMarquee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/TextMarquee"
-                android:text="Đau đầu,sổ mũi,..."
-                android:layout_below="@+id/tvTitleSymtom" />
+                android:layout_below="@+id/tvTitleSymtom"
+                android:text="Đau đầu,sổ mũi,..." />
         </RelativeLayout>
+
         <TextView
             style="@style/TitleGray"
-            android:text="Chọn phòng khám"/>
+            android:text="Chọn phòng khám" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -185,7 +186,7 @@
 
         <TextView
             style="@style/TitleGray"
-            android:text="Thời gian khám"/>
+            android:text="Thời gian khám" />
 
         <View style="@style/LineViewRider" />
 
@@ -202,6 +203,7 @@
                 android:layout_alignParentRight="true"
                 android:text="8:00" />
         </RelativeLayout>
+
         <View style="@style/LineViewRider" />
 
         <RelativeLayout
@@ -216,24 +218,26 @@
             <TextView
                 android:id="@+id/tvApppointmentTimeEnd"
                 style="@style/TextMarquee.Text16dpBlackWrapContent"
-                android:layout_toLeftOf="@+id/imgMore"
-                android:layout_marginRight="4dp"/>
+                android:layout_marginRight="4dp"
+                android:layout_toLeftOf="@+id/imgMore" />
+
             <ImageView
                 android:id="@+id/imgMore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/cab_ic_more"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"/>
+                android:src="@drawable/cab_ic_more" />
         </RelativeLayout>
+
         <View style="@style/LineViewRider" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:background="@android:color/white">
+            android:paddingRight="16dp">
 
             <EditText
                 android:id="@+id/edtDescription"
@@ -257,7 +261,6 @@
             android:padding="4dp"
             android:text="Hoàn thành"
             android:textColor="@android:color/white" />
-
 
 
     </LinearLayout>

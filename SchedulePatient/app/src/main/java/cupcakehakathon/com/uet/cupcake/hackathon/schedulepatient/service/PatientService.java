@@ -1,10 +1,15 @@
 package cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.service;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -14,9 +19,19 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.AppController;
+import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.R;
+import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.Util.Globals;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.object.ListFaculty;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.object.ListHospital;
+import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.object.ResponseObject;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.data.SQLController;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.data.SQLHelper;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.data.SyncData;
@@ -33,8 +48,13 @@ public class PatientService extends Service {
     public static final String VALUE_GET_RESPONSE_OF_DOCTOR = "GET_RESPONSE_DOCTOR";
     public static final String VALUE_ID_REQUEST = "ID_REQUEST";
 
+    private NotificationManager myNotificationManager;
+    private int notificationId = 111;
+
     private String TAG_REQ_ILLNESS = "ILLNESS", TAG_REQ_FACULTY = "FACULTY";
 
+
+    public static final String TAG = "SERVICE";
 
     @Nullable
     @Override
@@ -52,11 +72,14 @@ public class PatientService extends Service {
                     reqListFaculty(this);
                     break;
                 }
+                case VALUE_GET_RESPONSE_OF_DOCTOR: {
+
+                    break;
+                }
             }
         }
         return START_STICKY;
     }
-
 
     public static final String TAG_REQ_HOSPITAL = "HOSPITAL";
     public static final String BROADCAST_EMPTY_LIST_HOSPITAL = "LIST_HOSPITAL_EMPTY";
@@ -73,7 +96,6 @@ public class PatientService extends Service {
             @Override
             public void onResponse(String response) {
                 String result = response.toString();
-                Log.i("SERVICE", "onResponse: result hospital " + result);
                 Gson gson = new Gson();
                 try {
                     ListHospital listHospital = gson.fromJson(result, ListHospital.class);

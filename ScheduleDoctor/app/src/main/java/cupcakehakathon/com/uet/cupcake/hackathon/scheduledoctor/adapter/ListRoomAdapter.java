@@ -96,4 +96,8 @@ public class ListRoomAdapter extends RecyclerView.Adapter<ListRoomAdapter.RoomHo
 
         void onOptionClickListener(View v, int position);
     }
+
+    public void setRoomObjects(ArrayList<RoomObject> roomObjects) {
+        this.roomObjects = roomObjects;
+    }
 }

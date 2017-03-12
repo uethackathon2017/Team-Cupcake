@@ -40,7 +40,7 @@ public class ListRequestAdapter extends RecyclerView.Adapter<RequestHolder> {
         RequestObject requestObject = requestObjects.get(position);
         holder.getTvName().setText(requestObject.getName());
         holder.getTvAddress().setText(requestObject.getAddress());
-        holder.getTvBirthday().setText(requestObject.getBirthday());
+        holder.getTvBirthday().setText(requestObject.getDayTarget());
     }
 
     @Override
@@ -48,5 +48,7 @@ public class ListRequestAdapter extends RecyclerView.Adapter<RequestHolder> {
         return requestObjects.size();
     }
 
-
+    public void setRequestObjects(ArrayList<RequestObject> requestObjects) {
+        this.requestObjects = requestObjects;
+    }
 }

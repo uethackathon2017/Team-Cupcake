@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.transition.Explode;
 import android.view.Window;
 import android.view.WindowManager;
+
 import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.R;
 import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.listener.Listener;
 import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.ui.fragment.LoginFragment;
@@ -23,7 +24,7 @@ public class LoginActivity extends BaseActivity implements Listener.listenerLogi
     @Override
     protected int getLayoutResource() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         return R.layout.activity_login;
     }
 
@@ -54,7 +55,6 @@ public class LoginActivity extends BaseActivity implements Listener.listenerLogi
 
     @Override
     public void showLogin() {
-
         LoginFragment loginFragment = new LoginFragment();
         loginFragment.setListenerLogin(this);
         FragmentUtils.addFragment(loginFragment, R.id.frmLogin, this);
@@ -70,5 +70,6 @@ public class LoginActivity extends BaseActivity implements Listener.listenerLogi
         } else {
             startActivity(intent);
         }
+        finish();
     }
 }

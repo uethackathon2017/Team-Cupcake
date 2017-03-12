@@ -58,11 +58,23 @@ public class MainActivity extends BaseActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+    }
 
+    @Override
+    protected void initData(Bundle saveInstanceState) {
+
+        if (Utils.checkNetwork(this)) {
+            Intent intent = new Intent(MainActivity.this, DoctorService.class);
+            intent.putExtra(DoctorService.CONTROL_SERVICE, DoctorService.VALUE_GET_ALL_REQUEST_BY_FACULTY);
+            startService(intent);
+        }
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(viewPager, false);
+
+        SQLController controller = new SQLController(this);
+        ArrayList<RequestObject> ls = controller.queryListRequest(SQLHelper.SQL_QUERY_ALL_REQUEST);
 
         TabLayout.Tab upcoming = tabLayout.getTabAt(0);
         upcoming.setText("LIST REQUEST");
@@ -76,16 +88,6 @@ public class MainActivity extends BaseActivity
                 .getColor(this, android.R.color.white));
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-    }
-
-    @Override
-    protected void initData(Bundle saveInstanceState) {
-
-
-        Intent intent = new Intent(MainActivity.this, DoctorService.class);
-        intent.putExtra(DoctorService.CONTROL_SERVICE, DoctorService.VALUE_GET_ALL_REQUEST_BY_FACULTY);
-        startService(intent);
 
         setSupportActionBar(toolbar);
         toggle = new ActionBarDrawerToggle(
@@ -159,51 +161,6 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        registerReceiver(broadcastReceiver, new IntentFilter(DoctorService.BROADCAST_ERROR_REQ_REQUEST));
-        registerReceiver(broadcastReceiver, new IntentFilter(DoctorService.BROADCAST_EMPTY_LIST_REQUEST));
-        registerReceiver(broadcastReceiver, new IntentFilter(DoctorService.BROADCAST_UPDATE_REQUEST));
-        registerReceiver(broadcastReceiver, new IntentFilter(DoctorService.BROAD_CAST_UPDATE_ROOM));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (broadcastReceiver != null) {
-            unregisterReceiver(broadcastReceiver);
-        }
-    }
-
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            switch (action) {
-                case DoctorService.BROADCAST_UPDATE_REQUEST: {
-                    SQLController controller = new SQLController(MainActivity.this);
-                    ArrayList<RequestObject> ls = controller.queryListRequest(SQLHelper.SQL_QUERY_ALL_REQUEST);
-                    ToastUtils.quickToast(MainActivity.this, "Size : " + ls.size());
-                    break;
-                }
-                case DoctorService.BROADCAST_EMPTY_LIST_REQUEST: {
-
-                    break;
-                }
-                case DoctorService.BROADCAST_ERROR_REQ_REQUEST: {
-
-                    break;
-                }
-                case DoctorService.BROAD_CAST_UPDATE_ROOM: {
-                    // TODO : Update room demo
-                    SQLController controller = new SQLController(MainActivity.this);
-                    Log.i("MAIN", "onReceive: size " + controller.queryListRoom(SQLHelper.SQL_QUERY_ALL_ROOM).size());
-                    break;
-                }
-            }
-        }
-    };
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 

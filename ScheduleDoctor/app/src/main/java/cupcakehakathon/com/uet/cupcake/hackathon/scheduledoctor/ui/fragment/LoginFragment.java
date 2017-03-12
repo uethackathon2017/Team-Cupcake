@@ -44,7 +44,7 @@ public class LoginFragment
     @Override
     protected void initData(Bundle saveInstanceState) {
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setTitle("Waiting...");
+        progressDialog.setMessage("Waiting...");
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

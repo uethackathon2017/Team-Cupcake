@@ -1,7 +1,9 @@
 package cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.ui.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.view.ContextThemeWrapper;
@@ -36,11 +38,12 @@ import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.data.SQLHelper;
 import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.service.DoctorService;
 import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.utils.Constants;
 import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.utils.DialogUtils;
+import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.utils.Global;
 import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.utils.ToastUtils;
 import cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.utils.Utils;
 
 public class DetailRequestActivity extends BaseActivity
-        implements View.OnClickListener,PopupMenu.OnMenuItemClickListener {
+        implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
     private ImageView imgBack;
     private TextView tvTitle;
@@ -92,6 +95,13 @@ public class DetailRequestActivity extends BaseActivity
         layoutTimeEnd = (RelativeLayout) findViewById(R.id.layoutTimeEnd);
         tvApppointmentTime = (TextView) findViewById(R.id.tvApppointmentTime);
         tvApppointmentTimeEnd = (TextView) findViewById(R.id.tvApppointmentTimeEnd);
+        edtDescription = (EditText) findViewById(R.id.edtDescription);
+    }
+
+    @Override
+    protected void initData(Bundle saveInstanceState) {
+
+
         imgBack.setOnClickListener(this);
         btnDone = (Button) findViewById(R.id.btnDone);
         btnDone.setOnClickListener(this);
@@ -99,9 +109,15 @@ public class DetailRequestActivity extends BaseActivity
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsingToolbar);
         collapsingToolbarLayout.setTitle("Xứ lý yêu cầu");
 
-
         Intent intent = getIntent();
         requestObject = (RequestObject) intent.getSerializableExtra(Constants.REQUEST_OBJECT);
+        Global.dateTarger = requestObject.getDayTarget();
+
+        if (Utils.checkNetwork(this)) {
+            Intent i = new Intent(DetailRequestActivity.this, DoctorService.class);
+            i.putExtra(DoctorService.CONTROL_SERVICE, DoctorService.VALUE_GET_ALL_ROOM);
+            startService(i);
+        }
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         sqlController = new SQLController(getApplicationContext());
@@ -121,10 +137,6 @@ public class DetailRequestActivity extends BaseActivity
                 showPopupMenu(v);
             }
         });
-    }
-
-    @Override
-    protected void initData(Bundle saveInstanceState) {
 
         tvTitle.setText("Xử lý yêu cầu");
         tvName.setText(requestObject.getName());
@@ -138,7 +150,6 @@ public class DetailRequestActivity extends BaseActivity
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         roomObjects.addAll(sqlController.queryListRoom(SQLHelper.SQL_QUERY_ALL_ROOM));
-        Log.e("size",roomObjects.size()+"");
         recyclerView.setAdapter(listRoomAdapter);
         listRoomAdapter.notifyDataSetChanged();
 
@@ -151,9 +162,9 @@ public class DetailRequestActivity extends BaseActivity
                 finish();
                 break;
             case R.id.btnDone:
-                if(time == null){
+                if (time == null) {
                     ToastUtils.quickToast(getApplicationContext()
-                            ,"Bạn phải nhập thời gian kết thúc khám bệnh");
+                            , "Bạn phải nhập thời gian kết thúc khám bệnh");
                 } else {
                     ResponseObject responseObject = new ResponseObject();
 
@@ -176,10 +187,6 @@ public class DetailRequestActivity extends BaseActivity
                     //get current date
                     String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                     responseObject.setResponseDate(date);
-
-                    Log.e("idrequest", Utils.getValueFromPreferences
-                            (Constants.PREFERENCES_ID_ROOM, getApplicationContext()));
-
                     Intent intent = new Intent(getApplicationContext(), DoctorService.class);
                     intent.putExtra(DoctorService.CONTROL_SERVICE, DoctorService.VALUE_POST_RESPONSE);
                     intent.putExtra(Constants.RESPONSE_OBJECT, responseObject);
@@ -197,22 +204,22 @@ public class DetailRequestActivity extends BaseActivity
                                 String hourString = hourOfDay < 10 ? "0" + hourOfDay : "" + hourOfDay;
                                 String minuteString = minute < 10 ? "0" + minute : "" + minute;
                                 String secondString = second < 10 ? "0" + second : "" + second;
-
                                 time = hourString + ":" + minuteString + ":" + secondString;
                                 tvApppointmentTimeEnd.setText(time);
-//                                ToastUtils.quickToast(DetailRequestActivity.this, "time : " + time);
                             }
                         });
 
                 break;
         }
     }
+
     public void changeSelectedPosition(int index) {
         listRoomAdapter.notifyItemChanged(listRoomAdapter.getSelectedPosition());
         selectedPosition = index;
         listRoomAdapter.setSelectedPosition(selectedPosition);
         listRoomAdapter.notifyItemChanged(selectedPosition);
     }
+
     public void showPopupMenu(View view) {
         Context wrapper = new ContextThemeWrapper(getApplicationContext(), R.style.MyPopupMenu);
         PopupMenu popupMenu = new PopupMenu(wrapper, view);
@@ -224,9 +231,39 @@ public class DetailRequestActivity extends BaseActivity
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        if(item.getItemId() == R.id.action_detail){
-            startActivity(new Intent(getApplicationContext(),DetailRoomActivity.class));
+        if (item.getItemId() == R.id.action_detail) {
+            startActivity(new Intent(getApplicationContext(), DetailRoomActivity.class));
         }
         return false;
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(broadcastReceiver, new IntentFilter(DoctorService.BROAD_CAST_UPDATE_ROOM));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+        }
+    }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action) {
+                case DoctorService.BROAD_CAST_UPDATE_ROOM: {
+                    SQLController controller = new SQLController(DetailRequestActivity.this);
+                    listRoomAdapter.setRoomObjects(controller.queryListRoom(SQLHelper.SQL_QUERY_ALL_ROOM));
+                    recyclerView.setAdapter(listRoomAdapter);
+                    listRoomAdapter.notifyDataSetChanged();
+                    break;
+                }
+            }
+        }
+    };
 }

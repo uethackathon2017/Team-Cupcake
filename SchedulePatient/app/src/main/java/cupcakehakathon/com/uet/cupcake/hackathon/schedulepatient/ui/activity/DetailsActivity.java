@@ -2,6 +2,7 @@ package cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.ui.activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.R;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.Util.Constants;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.Util.DialogUtils;
+import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.Util.Global;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.Util.PostDataUtils;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.Util.RecycleUtils;
 import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.common.Util.ToastUtils;
@@ -153,6 +155,9 @@ public class DetailsActivity
 
     @Override
     public void requestSuccess(int id) {
+        Global.idRequestResponse = id;
+        Intent intent = new Intent();
+        intent.putExtra(Constants.HISTORY_ID,id);
         Log.i(TAG, "requestSuccess: success " + id);
         finish();
         ToastUtils.quickToast(getBaseContext(), "Send request success");

@@ -38,6 +38,7 @@ public class FacultyAdapter extends RecyclerView.Adapter<FacultyAdapter.ViewHold
             imgLetter = (ImageView) v.findViewById(R.id.imgLetterFaculty);
             txtName = (TextView) v.findViewById(R.id.txtFaculty);
             txtDesc = (TextView) v.findViewById(R.id.txtDescFaculty);
+            txtName.setSelected(true);
         }
     }
 

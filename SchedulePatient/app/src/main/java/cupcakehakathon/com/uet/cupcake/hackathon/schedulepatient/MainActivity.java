@@ -33,6 +33,7 @@ import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.ui.activity.Det
 
 import java.util.ArrayList;
 
+import cupcakehakathon.com.uet.cupcake.hackathon.schedulepatient.ui.activity.ListHistoryActivity;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
@@ -157,6 +158,8 @@ public class MainActivity extends BaseActivity
 
         } else if (id == R.id.nav_send) {
 
+        } else if(id == R.id.nav_history){
+            startActivity(new Intent(new Intent(getApplicationContext(),ListHistoryActivity.class)));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

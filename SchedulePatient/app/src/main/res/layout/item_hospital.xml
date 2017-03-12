@@ -25,6 +25,7 @@
             android:layout_margin="10dp"
             android:paddingBottom="15dp"
             android:scaleType="fitXY"
+            android:layout_gravity="center"
             android:src="@mipmap/ic_launcher" />
 
         <LinearLayout

@@ -179,6 +179,23 @@ public class SQLController {
         }
         return ls;
     }
+    public ArrayList<HospitalObject> queryListHistory(String sql) {
+        ArrayList<HospitalObject> ls = new ArrayList<>();
+        SQLiteDatabase db = sqlHelper.getReadableDatabase();
+        try {
+            Cursor cs = db.rawQuery(sql, null);
+            while (cs.moveToNext()) {
+                ls.add(new HospitalObject(cs.getInt(0), cs.getString(1), cs.getString(2), cs.getInt(3), cs.getString(4),
+                        cs.getString(5), cs.getString(6), cs.getString(7), cs.getString(8), cs.getString(9), cs.getDouble(10)));
+            }
+            cs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+        return ls;
+    }
 
     public ArrayList<RequestObject> queryListRequest(String sql) {
         ArrayList<RequestObject> ls = new ArrayList<>();

@@ -174,7 +174,7 @@ public class MainActivity extends BaseActivity
                 case 0:
                     return new ListRequestFragment();
                 case 1:
-                    return new ListRoomFragment();
+                    return new ListStandardFragment();
             }
             return new ListRequestFragment();
         }

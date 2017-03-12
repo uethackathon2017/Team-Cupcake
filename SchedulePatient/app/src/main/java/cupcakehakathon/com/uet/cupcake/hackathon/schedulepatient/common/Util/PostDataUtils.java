@@ -92,6 +92,52 @@ public class PostDataUtils {
         requestQueue.add(stringRequest);
     }
 
+    public static final String URL_ACCEPT = "http://cupcake96uet.hol.es/api/api_accept_response.php";
+
+    public void accept(final Context context, final int idRequest) {
+        StringRequest stringRequest =
+                new StringRequest(Request.Method.POST, URL_ACCEPT, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String result = response.toString();
+                        try {
+                            JSONArray arr = new JSONArray(result);
+                            JSONObject js = arr.getJSONObject(0);
+                            String status = js.getString("message");
+                            int id = js.getInt("id");
+                            if (status.equalsIgnoreCase(RESPONSE_SUCCESS)) {
+                                ToastUtils.quickToast(context, "Đã gửi yêu cầu chấp nhận.");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            loginStatus.loginFail();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }) {
+                    /**
+                     * @return
+                     */
+                    @Override
+                    protected Map<String, String> getParams() {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("idRequest", idRequest + "");
+                        params.put("value", 1 + "");
+                        return params;
+                    }
+
+                    @Override
+                    public Priority getPriority() {
+                        return Priority.IMMEDIATE;
+                    }
+                };
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        requestQueue.add(stringRequest);
+    }
+
 
     private Listener.registerStatus registerStatus;
     public static final String URL_REGISTER = "http://datuet.esy.es/api/api_create_patient.php";

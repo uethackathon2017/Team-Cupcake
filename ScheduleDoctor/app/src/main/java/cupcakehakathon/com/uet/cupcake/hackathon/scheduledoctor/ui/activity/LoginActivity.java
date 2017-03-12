@@ -42,8 +42,7 @@ public class LoginActivity extends BaseActivity implements Listener.listenerLogi
             Utils.setValueToPreferences(Constants.PREFERENCES_LOGIN, Constants.LOGIN_FALSE, this);
         }
         if (Utils.getValueFromPreferences(Constants.PREFERENCES_LOGIN, this).equalsIgnoreCase(Constants.LOGIN_TRUE)) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
+            startMain();
         }
         // show fragment login
         LoginFragment loginFragment = new LoginFragment();

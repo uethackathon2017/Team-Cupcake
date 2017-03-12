@@ -15,6 +15,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +45,7 @@ public class DoctorService extends Service {
     public static final String BROADCAST_ERROR_REQ_REQUEST = "ERROR_REQUEST";
 
     public static final String BROAD_CAST_UPDATE_ROOM = "UPDATE_ROOM";
+    public static final String BROAD_CAST_RESPONSE_SUCCESS = "BROADCAST_SUCCESS";
 
     public static final String CONTROL_SERVICE = "CONTROL_SERVICE";
     public static final String VALUE_GET_ALL_REQUEST_BY_FACULTY = "GET_ALL_REQ_BY_FACULTY";
@@ -99,6 +104,20 @@ public class DoctorService extends Service {
                     @Override
                     public void onResponse(String response) {
                         String result = response.toString();
+
+                        JSONObject js = null;
+                        try {
+                            JSONArray jsonArray = new JSONArray(result);
+                            js = jsonArray.getJSONObject(0);
+                            String status = js.getString("message");
+                            if (status.equalsIgnoreCase("success")) {
+                                Intent i = new Intent();
+                                i.setAction(DoctorService.BROAD_CAST_RESPONSE_SUCCESS);
+                                context.sendBroadcast(i);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         Log.i(TAG, "onResponse: result post " + result);
                     }
                 }, new Response.ErrorListener() {

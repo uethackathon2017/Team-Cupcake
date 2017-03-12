@@ -1,5 +1,6 @@
 package cupcakehakathon.com.uet.cupcake.hackathon.scheduledoctor.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -71,6 +72,7 @@ public class DetailRequestActivity extends BaseActivity
     private TextView tvApppointmentTimeEnd;
     private EditText edtDescription;
     private int positionMenu;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -100,8 +102,8 @@ public class DetailRequestActivity extends BaseActivity
 
     @Override
     protected void initData(Bundle saveInstanceState) {
-
-
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Waiting...");
         imgBack.setOnClickListener(this);
         btnDone = (Button) findViewById(R.id.btnDone);
         btnDone.setOnClickListener(this);
@@ -119,10 +121,14 @@ public class DetailRequestActivity extends BaseActivity
             startService(i);
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        sqlController = new SQLController(getApplicationContext());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         roomObjects = new ArrayList<>();
+        sqlController = new SQLController(getApplicationContext());
+        roomObjects.addAll(sqlController.queryListRoom(SQLHelper.SQL_QUERY_ALL_ROOM));
+
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         listRoomAdapter = new ListRoomAdapter(getApplicationContext(), roomObjects
                 , new ListRoomAdapter.OnRoomClickListener() {
             @Override
@@ -138,6 +144,9 @@ public class DetailRequestActivity extends BaseActivity
             }
         });
 
+        recyclerView.setAdapter(listRoomAdapter);
+        listRoomAdapter.notifyDataSetChanged();
+
         tvTitle.setText("Xử lý yêu cầu");
         tvName.setText(requestObject.getName());
         tvBirthday.setText(requestObject.getBirthday());
@@ -149,9 +158,6 @@ public class DetailRequestActivity extends BaseActivity
         tvGender.setText(requestObject.getGender());
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
-        roomObjects.addAll(sqlController.queryListRoom(SQLHelper.SQL_QUERY_ALL_ROOM));
-        recyclerView.setAdapter(listRoomAdapter);
-        listRoomAdapter.notifyDataSetChanged();
 
     }
 
@@ -163,6 +169,7 @@ public class DetailRequestActivity extends BaseActivity
                 break;
             case R.id.btnDone:
                 if (time == null) {
+                    progressDialog.show();
                     ToastUtils.quickToast(getApplicationContext()
                             , "Bạn phải nhập thời gian kết thúc khám bệnh");
                 } else {
@@ -196,7 +203,6 @@ public class DetailRequestActivity extends BaseActivity
                 break;
             case R.id.layoutTimeEnd:
                 du = new DialogUtils();
-
                 du.dialogShowTime(DetailRequestActivity.this, "Choose Time"
                         , new TimePickerDialog.OnTimeSetListener() {
                             @Override
@@ -241,6 +247,7 @@ public class DetailRequestActivity extends BaseActivity
     protected void onStart() {
         super.onStart();
         registerReceiver(broadcastReceiver, new IntentFilter(DoctorService.BROAD_CAST_UPDATE_ROOM));
+        registerReceiver(broadcastReceiver, new IntentFilter(DoctorService.BROAD_CAST_RESPONSE_SUCCESS));
     }
 
     @Override
@@ -261,6 +268,11 @@ public class DetailRequestActivity extends BaseActivity
                     listRoomAdapter.setRoomObjects(controller.queryListRoom(SQLHelper.SQL_QUERY_ALL_ROOM));
                     recyclerView.setAdapter(listRoomAdapter);
                     listRoomAdapter.notifyDataSetChanged();
+                    break;
+                }
+                case DoctorService.BROAD_CAST_RESPONSE_SUCCESS: {
+                    progressDialog.hide();
+                    ToastUtils.quickToast(DetailRequestActivity.this, "Gửi thành công");
                     break;
                 }
             }

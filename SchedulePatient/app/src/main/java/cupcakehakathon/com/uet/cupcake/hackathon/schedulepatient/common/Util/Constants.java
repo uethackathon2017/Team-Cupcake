@@ -30,5 +30,7 @@ public class Constants {
     public static final String STACK_REGISTER = "STACK_REGISTER";
     public static final String STACK_INFORMATION = "STACK_INFORMATION";
 
+    public static final String HISTORY_ID = "history_id";
+
 
 }
